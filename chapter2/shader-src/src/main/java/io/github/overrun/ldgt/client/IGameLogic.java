@@ -7,9 +7,9 @@ package io.github.overrun.ldgt.client;
 public interface IGameLogic {
     void init();
 
-    void input();
+    void input(Window window);
 
     void update(float delta);
 
-    void render(int mouseX, int mouseY);
+    void render(Window window);
 }

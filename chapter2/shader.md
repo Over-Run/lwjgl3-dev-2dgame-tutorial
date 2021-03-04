@@ -17,12 +17,12 @@
 
 在开始前，我们先把代码整理下。
 
-然后创建一个接口。该接口包含游戏逻辑。
+首先创建一个接口。该接口包含游戏逻辑。
 ```java
 public interface IGameLogic {
     void init();
 
-    void input();
+    void input(Window window);
 
     void update(float delta);
 
