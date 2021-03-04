@@ -29,11 +29,12 @@ LWJGL提供了一个在线配置库的网址
 之后是**Presets**选项  
 选择**Custom**  
 ---
-// 现在是**Addons**选项  
-// 建议选择JOML与LWJGLX/debug  
-![JOML v1.10](.assets/joml.png)   
+现在是**Addons**选项  
+一定要选择JOML
+![JOML v1.10](.assets/joml.png)  
+建议选择LWJGLX/debug  
 ![LWJGLX/debug v1](.assets/debug.png)   
-// 一个是数学库（到后面数学是真的重要），一个是调试库  
+一个是数学库（到后面数学是真的重要），一个是调试库  
 ---
 **Version**选择**3.2.3**
 ---

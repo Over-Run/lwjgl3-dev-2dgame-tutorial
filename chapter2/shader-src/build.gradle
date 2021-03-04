@@ -1,8 +1,10 @@
 plugins {
     id 'java'
+    id 'idea'
 }
 
 group 'io.github.over-run'
+archivesBaseName = 'shader'
 version '1.0.0'
 
 repositories {
@@ -10,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.joml:joml:1.10.0'
     implementation platform('org.lwjgl:lwjgl-bom:3.2.3')
     for (depend in ['', '-glfw', '-opengl']) {
         implementation "org.lwjgl:lwjgl$depend"
@@ -18,3 +21,5 @@ dependencies {
         }
     }
 }
+
+idea.module.inheritOutputDirs true
