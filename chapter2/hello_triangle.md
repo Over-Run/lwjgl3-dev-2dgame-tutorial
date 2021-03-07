@@ -28,7 +28,7 @@ public class HelloWorld {
 }
 ```
 然后，把`glClearColor(1.0f, 0.0f, 0.0f, 0.0f);`改为`glClearColor(0.0f, 0.0f, 0.0f, 0.0f);`，这样就不会亮瞎眼了。  
-接着在`glClear`后添加下面几条语句：
+接着在`glClear`后渲染循环()添加下面几条语句：
 ```java
 public class HelloWorld {
     // ..
