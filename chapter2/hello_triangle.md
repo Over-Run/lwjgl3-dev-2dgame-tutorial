@@ -6,6 +6,8 @@
 现在我们想绘制一个五×N彩的三角形。  
 在本节中，我们将首次也是最后一次使用固定管线来绘制。如果想了解更多固定管线的使用示例，请参考[Minecraft2D](https://github.com/Over-Run/Minecraft2D).
 
+下一节，我们将会介绍着色器——一个自定义的管线
+
 首先，我们定位到这个位置：
 ```java
 public class HelloWorld {
@@ -53,6 +55,10 @@ public class HelloWorld {
 }
 ```
 启动后，会得到一个鲜艳的三角形。
+
+`glColor4f()`用于设置颜色, 以OpenGL的RGBA模式
+
+`glVertex3f()`设置顶点位置, 以x, y, z的格式
 
 ---
 失败了？还不快抛[issue](https://github.com/Over-Run/lwjgl3-dev-2dgame-tutorial/issues/new)!
