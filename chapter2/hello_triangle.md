@@ -36,15 +36,19 @@ public class HelloWorld {
     // ..
     private void loop() {
         // ..
-        glBegin(GL_TRIANGLES); // 开始绘制三角形
-        // 注意：需要逆时针绘制
-        glColor4f(1.0f, 0.0f, 0.0f, 0.0f); // 红
-        glVertex3f(0.0f, 1.0f, 0.0f); // 中上
-        glColor4f(0.0f, 1.0f, 0.0f, 0.0f); // 绿
-        glVertex3f(-1.0f, -1.0f, 0.0f); // 左下
-        glColor4f(0.0f, 0.0f, 1.0f, 0.0f); // 蓝
-        glVertex3f(1.0f, -1.0f, 0.0f); // 右下
-        glEnd(); // 绘制结束
+        while (!glfwWindowShouldClose(window)) {
+            // ..
+            glBegin(GL_TRIANGLES); // 开始绘制三角形
+            // 注意：需要逆时针绘制
+            glColor3f(1, 0, 0); // 红
+            glVertex2f(0, 1); // 中上
+            glColor3f(0, 1, 0); // 绿
+            glVertex2f(-1, -1); // 左下
+            glColor3f(0, 0, 1); // 蓝
+            glVertex2f(1, -1); // 右下
+            glEnd(); // 绘制结束
+            // ..
+        }
         // ..
     }
     // ..
