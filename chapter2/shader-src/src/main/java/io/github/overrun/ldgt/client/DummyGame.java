@@ -1,12 +1,12 @@
 package io.github.overrun.ldgt.client;
 
-import static org.lwjgl.opengl.GL11.glViewport;
+import java.io.Closeable;
 
 /**
  * @author squid233
  * @since 2021/03/04
  */
-public final class DummyGame implements IGameLogic {
+public final class DummyGame implements IGameLogic, Closeable {
     private final GameRenderer renderer = new GameRenderer();
 
     @Override
@@ -22,10 +22,11 @@ public final class DummyGame implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        if (window.isResized()) {
-            glViewport(0, 0, window.getWidth(), window.getHeight());
-            window.setResized(false);
-        }
-        renderer.render();
+        renderer.render(window);
+    }
+
+    @Override
+    public void close() {
+        renderer.close();
     }
 }

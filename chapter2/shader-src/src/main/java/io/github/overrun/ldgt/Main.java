@@ -9,6 +9,8 @@ import io.github.overrun.ldgt.client.GameEngine;
  */
 public final class Main {
     public static void main(String[] args) {
-        new GameEngine("Game", 896, 512, new DummyGame()).run();
+        try (DummyGame game = new DummyGame()) {
+            new GameEngine("Game", 896, 512, game).run();
+        }
     }
 }
