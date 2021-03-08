@@ -1,4 +1,4 @@
-# 着色器
+# 着色器（上）
 
 [上一节](hello_triangle.md)
  
@@ -150,8 +150,4 @@ float[] vertices = {
 ![colorful_triangle](triangle.png)
 
 ---
-
-<div style="font-size:5em">TODO</div>
-
----
-[下一节](texture.md)
+[下一段](shader-2.md)
