@@ -58,7 +58,12 @@ public class HelloWorld {
 
 `glColor4f()`用于设置颜色, 以OpenGL的RGBA模式
 
-`glVertex3f()`设置顶点位置, 以x, y, z的格式
+`glVertex3f()`设置顶点位置, 以x, y, z的格式。
+
+也许你会疑惑:
+
+这不是2d游戏吗？z轴有什么用
+答案简单至极：将背景的z轴变深，以使其他物体覆盖于背景上。
 
 ---
 失败了？还不快抛[issue](https://github.com/Over-Run/lwjgl3-dev-2dgame-tutorial/issues/new)!
