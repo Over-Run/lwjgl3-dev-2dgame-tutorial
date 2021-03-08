@@ -3,6 +3,7 @@
 attribute vec2 vert;
 attribute vec3 in_color;
 varying vec3 out_color;
+uniform mat4 worldMatrix
 
 void main()
 {
