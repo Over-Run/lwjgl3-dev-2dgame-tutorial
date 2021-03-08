@@ -1,4 +1,4 @@
-# 着色器
+# 着色器（上）
 
 [上一节](hello_triangle.md)
  
@@ -6,9 +6,9 @@
 
 在开始前，我们先列出想要实现的功能。
 - 一个鲜艳的三角形
-- ~~ 可以移动（类似于`glTranslate*`）~~
-- ~~ 可以缩放（类似于`glScale*`）~~
-- ~~ 可以旋转（类似于`glRotate*`）~~
+- 可以移动（类似于`glTranslate*`）
+- 可以缩放（类似于`glScale*`）
+- 可以旋转（类似于`glRotate*`）
 
 现在可以开工了。
 
@@ -136,120 +136,214 @@ void main()
 }
 ```
 
-`#version 110`代表了着色器的版本  
-`in vec2 vert;`代表输入一个二维向量vert， 即顶点位置  
-`void main()`是着色器程序的入口  
-`gl_Position`是一个特殊变量，OpenGL会从这里读取顶点位置  
-`gl_FragColor`是一个特殊变量，OpenGL会从这里读取片段颜色  
+- `#version 110`代表了着色器的版本（此处为GLSL 1.1)
+- `in vec2 vert;`代表输入一个二维向量vert， 即顶点位置
+- `void main()`是着色器程序的入口。与C不同，这里的`main`不需要返回值。
+- `gl_Position`是一个特殊变量，OpenGL会从这里读取顶点位置
+- `gl_FragColor`是一个特殊变量，OpenGL会从这里读取片段颜色 
 以上着色器将在`vert.x, vert.y`处显示一个红色的图形。   
 显然，我们需要读取着色器并让OpenGL识别它：~~废话~~  
-为了方便，我们写一个着色器类  
+为了方便，我们将创建一个`GlProgram`类来创建program并读取着色器。  
+> 建议不要翻译program。
+`GlProgram`包含program的ID，当ID为`NULL`时会抛一个NPE。  
+它还包含一系列方法，用于快速创建着色器、使用program以及清理内存等。
 ```java
-public final class Shader {
-	private long id;
+public final class GlProgram implements Closeable {
+    private final int programId = glCreateProgram();
+    private int vshId, fshId;
 
-	public Shader(strring vertexFile, string fragmentFile) {
-        char[] vertex = new char[32767];
-        char[] fragment = new char[32767];
-
-        try {
-            new BufferedReader(new InputStreamReader(new FileInputStream(new File(vertexFile)))).read(vertex);
-            new BufferedReader(new InputStreamReader(new FileInputStream(new File(fragmentFile)))).read(fragment);
-        } catch (FileInputStream | IOException e) {
-            e.printStackTrace();
+    public GlProgram() {
+        if (programId == 0) {
+            throw new NullPointerException("Failed to create GL program");
         }
+    }
 
-        int vertexId, fragmentId;
-        int[] status = new int[1];
+    public void createVsh(String src) {
+        vshId = createShader(src, GL_VERTEX_SHADER);
+    }
 
-        vertexId = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexId, new String(vertex));
-        glCompileShader(vertexId);
+    public void createFsh(String src) {
+        fshId = createShader(src, GL_FRAGMENT_SHADER);
+    }
 
-        glGetShaderiv(vertexId, GL_COMPILE_STATUS, status);
-        if(status[0] == 0) {
-            String log = glGetShaderInfoLog(vertexId, 32767);
-            throw new IllegalStateException("[Shader Error] Compile vertex shader fail: " + log);
+    private int createShader(String src, int type) {
+        int id = glCreateShader(type);
+        if (id == 0) {
+            throw new NullPointerException("Failed to create shader (Shader type: "
+                    + type + ")");
         }
-
-        fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentId, new String(fragment));
-        glCompileShader(fragmentId);
-
-        glGetShaderiv(fragmentId, GL_COMPILE_STATUS, status);
-        if(status[0] == 0) {
-            String log = glGetShaderInfoLog(fragmentId, 32767);
-            throw new IllegalStateException("[Shader Error] Compile fragment shader fail: " + log);
+        glShaderSource(id, src);
+        glCompileShader(id);
+        if (glGetShaderi(id, GL_COMPILE_STATUS) == GL_FALSE) {
+            throw new RuntimeException("Error compiling shader src: " + glGetShaderInfoLog(id));
         }
+        glAttachShader(programId, id);
+        return id;
+    }
 
-        shader = glCreateProgram();
-        glAttachShader(id, vertexId);
-        glAttachShader(id, fragmentId);
-        glLinkProgram(id);
-
-        glGetProgramiv(fragmentId, GL_LINK_STATUS, status);
-        if(status[0] == 0) {
-            String log = glGetProgramInfoLog(fragmentId, 32767);
-            throw new IllegalStateException("[Shader Error] Link program fail: " + log);
+    public void link() {
+        glLinkProgram(programId);
+        if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
+            throw new RuntimeException("Error linking GL program: " + glGetProgramInfoLog(programId));
         }
+        if (vshId != 0) {
+            glDetachShader(programId, vshId);
+        }
+        if (fshId != 0) {
+            glDetachShader(programId, fshId);
+        }
+        glValidateProgram(programId);
+        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
+            System.out.println("[WARN]" + glGetProgramInfoLog(programId));
+        }
+    }
 
-        glDeleteShader(vertexId);
-        glDeleteShader(fragmentId);
+    public void bind() {
+        glUseProgram(programId);
+    }
+
+    public void unbind() {
+        glUseProgram(0);
+    }
+
+    public void enableVertexAttribArray(String name) {
+        glEnableVertexAttribArray(glGetAttribLocation(programId, name));
+    }
+
+    public void vertexAttribPointer(String name,
+                                    int size,
+                                    int type,
+                                    boolean normalized,
+                                    int stride) {
+        glVertexAttribPointer(
+                glGetAttribLocation(programId, name),
+                size,
+                type,
+                normalized,
+                stride,
+                0);
+    }
+
+    public void disableVertexAttribArrays(String... names) {
+        for (String nm : names) {
+            glDisableVertexAttribArray(glGetAttribLocation(programId, nm));
+        }
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        glDeleteProgram(id);
+    public void close() {
+        unbind();
+        if (programId != 0) {
+            glDeleteProgram(programId);
+        }
+        if (vshId != 0) {
+            glDeleteShader(vshId);
+        }
+        if (fshId != 0) {
+            glDeleteShader(fshId);
+        }
     }
-
-    public int getProgram();
-
-    public void use() {
-        glUseProgram(id);
-    }
-
-    public int getUniformLocation(String name);
 }
 ```  
 按照惯例，开始解释
 ```java
-        char[] vertex = new char[32767];
-        char[] fragment = new char[32767];
+    public void createVsh(String src) {
+        vshId = createShader(src, GL_VERTEX_SHADER);
+    }
 
-        try {
-            new BufferedReader(new InputStreamReader(new FileInputStream(new File(vertexFile)))).read(vertex);
-            new BufferedReader(new InputStreamReader(new FileInputStream(new File(fragmentFile)))).read(fragment);
-        } catch (FileInputStream | IOException e) {
-            e.printStackTrace();
+    public void createFsh(String src) {
+        fshId = createShader(src, GL_FRAGMENT_SHADER);
+    }
+
+    private int createShader(String src, int type) {
+        int id = glCreateShader(type);
+        if (id == 0) {
+            throw new NullPointerException("Failed to create shader (Shader type: "
+                    + type + ")");
         }
+        glShaderSource(id, src);
+        glCompileShader(id);
+        if (glGetShaderi(id, GL_COMPILE_STATUS) == GL_FALSE) {
+            throw new RuntimeException("Error compiling shader src: " + glGetShaderInfoLog(id));
+        }
+        glAttachShader(programId, id);
+        return id;
+    }
 ```  
-这部分相信大家都能看懂：用Reader读取文件中所有的字节  
-```java
-        vertexId = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexId, new String(vertex));
-        glCompileShader(vertexId);
-```  
-先创建一个顶点着色器`glCreateShader(GL_VERTEX_SHADER)`  
+先创建一个着色器`glCreateShader(type)`  
 `glCreateShader`代表创建着色器  
 `GL_VERTEX_SHADER`代表顶点着色器  
 `glShaderSource`绑定着色器源码  
 `glCompileShader`编译着色器  
 
-`glGetShaderiv`用于读取着色器状态，这里读取的是编译状态  
-其中第三个参数必须是个数组  
-当`status[0]`为0使，编译不成功  
+`glGetShaderi`用于读取着色器状态，这里读取的是编译状态  
+当返回值为`GL_FALSE`时，编译不成功  
 `glGetShaderInfoLog`获取其状态  
 片段着色器以此类推  
-着色器程序以此类推  
-最后`glDeleteShader`释放内存  
-当finalize被调用时，`glDeleteProgram`释放内存  
-`glUseProgram`使用着色器
+program以此类推  
+当close被调用时，`glDeleteProgram`和`glDeleteShader`释放内存  
+`glUseProgram`使用program
 
-至此，着色器类完
+当完成后，我们就可以真正开始使用着色器了。
+
+首先修改顶点着色器。
+```glsl
+#version 110
+
+attribute vec2 vert;
+attribute vec3 in_color;
+varying vec3 out_color;
+
+void main()
+{
+    gl_Position = vec4(vert, 0, 1);
+    out_color = in_color;
+}
+```
+这样可以设置颜色。
+
+然后修改片元着色器。
+```glsl
+#version 110
+
+varying vec3 out_color;
+
+void main()
+{
+    gl_FragColor = vec4(out_color, 1);
+}
+```
+
+现在可以对`GameRenderer`进行修改了。  
+我们在渲染器中初始化了我们的 program，并且使用它。
+
+<div style="font-size: 2em;">完成了吗？</div>
+
+当然没有。我们还有vbo和vao没写呢。  
+~~鱿鱼~~由于在本教程中我们使用 OpenGL 2.0， 所以我们使用默认的 vao（0）。
+<!-- 此处需要更多细节。 -->
+我们将在 link the program 后对 vbo 进行初始化。
+
+首先我们需要一份顶点位置的数组。由于这是个三角形，因此我们需要2×3个顶点。
+```java
+float[] vertices = {
+    // 中上
+    0, .5f,
+    // 左下
+    -.5f, -.5f,
+    // 右下
+    .5f, -.5f
+};
+```
+接着我们将使用`glGenBuffers`生成 vbo。  
+然后我们使用`glBindBuffer(GL_ARRAY_BUFFER, vertVbo)`将其绑定到`GL_ARRAY_BUFFER`上。
+
+<!-- Required: glVertexAttribPointer -->
+
+对`colorVbo`也执行同样的操作。
+
+启动后，又会得到一个鲜艳的三角形。  
+![colorful_triangle](triangle.png)
 
 ---
-
-<div style="font-size:5em">TODO</div>
-
----
-[下一节](texture.md)
+[下一段](shader-2.md)

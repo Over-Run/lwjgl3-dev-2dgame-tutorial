@@ -4,8 +4,9 @@
 - 第二章：入门
     - [你好，窗口!](chapter2/hello_window.md)
     - [你好，三角形](chapter2/hello_triangle.md)
-    - [着色器](chapter2/shader.md)
-    - [给三角形贴上纹理](chapter2/texture.md)
+    - [着色器（上）](chapter2/shader.md)
+    - [着色器（下）](chapter2/shader-2.md)
+    - [纹理](chapter2/texture.md)
     - [摄像机](chapter2/camera.md)
 - 第三章：游戏应该要做的
     - [输入(重点)](chapter3/input.md)
