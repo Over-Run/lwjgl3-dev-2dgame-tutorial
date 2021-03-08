@@ -16,7 +16,7 @@ public final class Shader {
             new BufferedReader(new InputStreamReader(new FileInputStream(new File(fragmentFile)))).read(fragment);
         } catch (FileInputStream | IOException e) {
             e.printStackTrace();
-		    }
+	}
 
         int vertexId, fragmentId;
         int[] status = new int[1];
