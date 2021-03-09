@@ -1,4 +1,4 @@
-# LWJGL3-dev-2dgame-tutorial
+# LWJGL3 Develop 2D Game Tutorial
 
 A tutorial on making a **2D** game from scratch using LWJGL3
 

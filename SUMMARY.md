@@ -8,8 +8,11 @@
     - [着色器（下）](chapter2/shader-2.md)
     - [纹理](chapter2/texture.md)
     - [摄像机](chapter2/camera.md)
+    - [HUD](chapter2/hud.md)
 - 第三章：游戏应该要做的
+    - [世界生成](chapter3/worldgen.md)
+    - [音效](chapter3/sounds.md)
     - [输入(重点)](chapter3/input.md)
     - [游戏循环](chapter3/game_loop.md)
-    - [客户端与服务器(难点)](chapter3/client_and_server.md)
+    - [客户端与服务器(难难难点)](chapter3/client_and_server.md)
     - [OOP六大原则](chapter3/6_rules_of_OOP.md)
