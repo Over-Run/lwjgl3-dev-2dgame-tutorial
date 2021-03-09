@@ -6,6 +6,6 @@ package io.github.overrun.ldgt.block;
  */
 public final class Block {
     public int x, y;
-    public int scale;
-    public int rotation;
+    public float scale = 1;
+    public float rotation;
 }

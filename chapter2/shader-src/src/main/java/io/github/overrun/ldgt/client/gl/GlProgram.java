@@ -1,6 +1,11 @@
 package io.github.overrun.ldgt.client.gl;
 
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
+
 import java.io.Closeable;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -9,6 +14,7 @@ import static org.lwjgl.opengl.GL20.*;
  * @since 2021/03/08
  */
 public final class GlProgram implements Closeable {
+    private final Map<String, Integer> uniforms = new HashMap<>();
     private final int programId = glCreateProgram();
     private int vshId, fshId;
 
@@ -64,6 +70,24 @@ public final class GlProgram implements Closeable {
 
     public void unbind() {
         glUseProgram(0);
+    }
+
+    public int getUniform(String name) {
+        return uniforms.computeIfAbsent(name, s -> {
+            int loc = (glGetUniformLocation(programId, s));
+            if (loc < 0) {
+                throw new IllegalArgumentException("Couldn't find uniform: " + s);
+            }
+            return loc;
+        });
+    }
+
+    public void setUniform(String name, Matrix4f matrix4f) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniformMatrix4fv(getUniform(name),
+                    false,
+                    matrix4f.get(stack.mallocFloat(16)));
+        }
     }
 
     public void enableVertexAttribArray(String name) {

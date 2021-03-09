@@ -1,5 +1,6 @@
 package io.github.overrun.ldgt.client;
 
+import io.github.overrun.ldgt.block.Block;
 import io.github.overrun.ldgt.client.gl.GlProgram;
 
 import java.io.Closeable;
@@ -14,8 +15,10 @@ import static org.lwjgl.opengl.GL15.*;
  * @since 2021/03/04
  */
 public final class GameRenderer implements Closeable {
-    private GlProgram program;
+    public final Block block = new Block();
     private final List<Integer> vboList = new ArrayList<>();
+    private final Transformation transformation = new Transformation();
+    private GlProgram program;
 
     public void init() {
         program = new GlProgram();
@@ -23,12 +26,14 @@ public final class GameRenderer implements Closeable {
         program.createFsh(readShaderLines("item.fsh"));
         program.link();
         float[] vertices = {
-                // 中上
-                0, .5f,
+                // 左上
+                0, 0,
                 // 左下
-                -.5f, -.5f,
+                0, 256,
                 // 右下
-                .5f, -.5f
+                256, 256,
+                // 右上
+                // 16, 0
         };
         float[] colors = {
                 1, 0, 0,
@@ -37,20 +42,20 @@ public final class GameRenderer implements Closeable {
         };
         // vertices
         int vertVbo = glGenBuffers();
+        vboList.add(vertVbo);
         glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
         program.enableVertexAttribArray("vert");
         program.vertexAttribPointer("vert", 2, GL_FLOAT, false, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        vboList.add(vertVbo);
         // colors
         int colorVbo = glGenBuffers();
+        vboList.add(colorVbo);
         glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
         glBufferData(GL_ARRAY_BUFFER, colors, GL_STATIC_DRAW);
         program.enableVertexAttribArray("in_color");
         program.vertexAttribPointer("in_color", 3, GL_FLOAT, false, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        vboList.add(colorVbo);
     }
 
     public void render(Window window) {
@@ -60,6 +65,8 @@ public final class GameRenderer implements Closeable {
             window.setResized(false);
         }
         program.bind();
+        program.setUniform("orthoMatrix",
+                transformation.getOrthoMatrix(block, window.getWidth(), window.getHeight()));
         glDrawArrays(GL_TRIANGLES, 0, 3);
         program.unbind();
     }
