@@ -1,4 +1,4 @@
-- [说明](README.md)
+[说明](README.md)
 - 第一章：准备工作
     - [配置环境](chapter1/lwjgl.md)
 - 第二章：入门
@@ -10,9 +10,13 @@
     - [摄像机](chapter2/camera.md)
     - [HUD](chapter2/hud.md)
 - 第三章：游戏应该要做的
+    - [JSON模型](chapter3/model.md)
+    - [字体渲染](chapter3/text.md)
     - [世界生成](chapter3/worldgen.md)
+    - [单例化](chapter3/singleton.md)
     - [音效](chapter3/sounds.md)
     - [I18n](chapter3/i18n.md)
+    - [发布你的游戏](chapter3/release.md)
     - [输入(重点)](chapter3/input.md)
     - [游戏循环](chapter3/game_loop.md)
     - [客户端与服务器(难难难点)](chapter3/client_and_server.md)
