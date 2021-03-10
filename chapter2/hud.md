@@ -58,4 +58,4 @@ private final Matrix4f modelMatrix = new Matrix4f();
 ![hud-1](hud-1.png)
 
 ---
-[下一章](../chapter3/worldgen.md)
+[下一章](../chapter3/model.md)

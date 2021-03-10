@@ -9,7 +9,7 @@
     - [纹理](chapter2/texture.md)
     - [摄像机](chapter2/camera.md)
     - [HUD](chapter2/hud.md)
-- 第三章：游戏应该要做的
+- 第三章：高级教程
     - [JSON模型](chapter3/model.md)
     - [字体渲染](chapter3/text.md)
     - [世界生成](chapter3/worldgen.md)
