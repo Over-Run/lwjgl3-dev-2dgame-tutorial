@@ -1,0 +1,10 @@
+site_name: LWJGL3 Develop 2D Game Tutorial
+nav:
+  - 准备工作:
+    - 配置环境: chapter1/lwjgl.md
+  - 入门:
+    - 你好，窗口！: chapter2/hello_window.md
+    - 你好，三角形: chapter2/hello_triangle.md
+    - 着色器: chapter2/shader.md
+    - 纹理: chapter2/texture.md
+theme: readthedocs

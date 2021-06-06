@@ -6,4 +6,4 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
 group 'io.github.over-run'
 archivesBaseName = 'ldgt'
-version '1.0.0'
+version '2.0.0'
