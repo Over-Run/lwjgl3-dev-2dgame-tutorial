@@ -1,5 +1,6 @@
 site_name: LWJGL3 Develop 2D Game Tutorial
 nav:
+  - 简介: index.md
   - 准备工作:
     - 配置环境: chapter1/lwjgl.md
   - 入门:
