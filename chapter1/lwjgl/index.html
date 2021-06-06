@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>配置环境 - LWJGL3 Develop 2D Game Tutorial</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "\u914d\u7f6e\u73af\u5883";
+    var mkdocs_page_input_path = "chapter1\\lwjgl.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> LWJGL3 Develop 2D Game Tutorial</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">准备工作</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">配置环境</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#lwjgl">下载 LWJGL</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">配置环境</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">入门</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../chapter2/hello_window/">你好，窗口！</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../chapter2/hello_triangle/">你好，三角形</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../chapter2/shader/">着色器</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../chapter2/texture/">纹理</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">LWJGL3 Develop 2D Game Tutorial</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>准备工作 &raquo;</li>
+        
+      
+    
+    <li>配置环境</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="_1">配置环境</h1>
+<h2 id="lwjgl">下载 LWJGL</h2>
+<p>LWJGL提供了一个<a href="https://www.lwjgl.org/customize">在线配置库的网址</a><br />
+当然，这么多配置选项，不给点建议你肯定会懵圈</p>
+<hr />
+<p>首先是 <strong>Show description</strong> 开关，对，就是这个<br />
+<img alt="Show descriptions" src="../show_desc.png" /> <br />
+这个开关用于负责解释这些奇奇怪怪的选项是什么意思<br />
+如果英文足够好，可以选择开这个开关然后根据内容自己选<br />
+难度约等于初三英语考试</p>
+<hr />
+<p>然后是 <strong>Mode</strong> 选项<br />
+<img alt="Zip/Maven/Gradle" src="../mode.png" /><br />
+第一个是以<strong>压缩文件</strong>形式打包下载<br />
+第二个是用<strong>Maven</strong>来自动下载依赖<br />
+第三个是用<strong>Gradle</strong>来自动下载依赖<br />
+第三个是用<strong>Apache Ivy</strong>来自动下载依赖<br />
+<strong>Option</strong>选项因Mode而异<br />
+不过想必大家都能看懂</p>
+<hr />
+<p>接下来是<strong>Natives</strong>选项<br />
+因为关于图形渲染的库必定与平台有关<br />
+所以要你选择你的游戏可能会发布到的平台<br />
+一般而言，勾选这三个就可以了<br />
+<img alt="Native platforms" src="../natives.png" /> <br />
+如果你想，可以全选</p>
+<hr />
+<p>之后是 <strong>Presets</strong> 选项<br />
+选择 <strong>Custom</strong></p>
+<hr />
+<p>现在是<strong>Addons</strong>选项<br />
+一定要选择JOML
+<img alt="JOML v1.10" src="../joml.png" /><br />
+数学库（到后面数学是真的重要）</p>
+<hr />
+<p><strong>Version</strong> 选择 <strong>3.2.3</strong></p>
+<hr />
+<p>最后是<strong>Contents</strong><br />
+我一般选择</p>
+<ul>
+<li>Assimp</li>
+<li>glfw</li>
+<li>LLVM</li>
+<li>LZ4 或 ZStandard</li>
+<li>OpenAL</li>
+<li>OpenGL</li>
+<li>STB</li>
+<li>Vulkan</li>
+<li>Vulkan Memory Allocator</li>
+</ul>
+<p>其中强烈推荐（几乎必不可少）</p>
+<ul>
+<li>glfw</li>
+<li>OpenAL (音效)</li>
+<li>OpenGL</li>
+<li>STB (纹理等)</li>
+</ul>
+<h2 id="_2">配置环境</h2>
+<p>在 <strong>Mode</strong> 中选择 <strong>压缩文件</strong> 的根据自己的IDE配置<br />
+剩下的则把对应的文件（如<em>build.gradle</em>）复制到项目根目录下</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../chapter2/hello_window/" class="btn btn-neutral float-right" title="你好，窗口！">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+        <span style="margin-left: 15px"><a href="../../chapter2/hello_window/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

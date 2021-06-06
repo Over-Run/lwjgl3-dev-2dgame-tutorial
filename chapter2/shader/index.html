@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>着色器 - LWJGL3 Develop 2D Game Tutorial</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "\u7740\u8272\u5668";
+    var mkdocs_page_input_path = "chapter2\\shader.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> LWJGL3 Develop 2D Game Tutorial</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">准备工作</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../chapter1/lwjgl/">配置环境</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">入门</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../hello_window/">你好，窗口！</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../hello_triangle/">你好，三角形</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">着色器</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_2">一个鲜艳的三角形</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#_3">编写着色器</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">矩阵变换</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../texture/">纹理</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">LWJGL3 Develop 2D Game Tutorial</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>入门 &raquo;</li>
+        
+      
+    
+    <li>着色器</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="_1">着色器（上）</h1>
+<p>本节的源码可在 <a href="https://github.com/Over-Run/lwjgl3-dev-2dgame-tutorial/">root</a> 中找到。</p>
+<p>在开始前，我们先列出想要实现的功能。</p>
+<ul>
+<li>一个鲜艳的三角形</li>
+<li>可以移动（类似于<code>glTranslate*</code>）</li>
+<li>可以缩放（类似于<code>glScale*</code>）</li>
+<li>可以旋转（类似于<code>glRotate*</code>）</li>
+</ul>
+<p>现在可以开工了。</p>
+<h2 id="_2">一个鲜艳的三角形</h2>
+<p>在开始前，我们先把代码整理下（乱糟糟的代码总是不好)。不给出太多的实现，如果需要详细信息请查看源码。</p>
+<p>首先创建一个接口。该接口包含游戏逻辑。</p>
+<pre><code class="language-java">public interface IGameLogic {
+    void init();
+
+    void input(Window window);
+
+    void update(float delta);
+
+    void render(int mouseX, int mouseY);
+}
+</code></pre>
+<p>再创建一个Window类：</p>
+<pre><code class="language-java">public final class Window {
+    private final String title;
+
+    private int width, height;
+
+    private long handle;
+
+    private boolean resized;
+
+    public Window(String title, int width, int height);
+
+    public void init();
+
+    public boolean isKeyPressed(int key);
+
+    public boolean shouldClose();
+
+    public void update();
+
+    public String getTitle();
+
+    public int getWidth();
+
+    public int getHeight();
+
+    public boolean isResized();
+
+    public void setResized(boolean resized);
+}
+</code></pre>
+<p>然后把GLFW初始化代码放到<code>Window</code>类下。</p>
+<p>为了方便<del>偷懒</del>，我们使用由我们推出的GLUtils来帮助我们。<br />
+修改<code>build.gradle</code>：</p>
+<pre><code class="language-groovy">dependencies {
+  implementation &quot;io.github.over-run:glutils:0.3.0&quot;
+}
+</code></pre>
+<p>之后创建一个<code>GameRenderer</code>负责渲染。</p>
+<pre><code class="language-java">public final class GameRenderer {
+    public void init();
+    public void render();
+}
+</code></pre>
+<p>最后我们创建<code>DummyGame</code>来实现<code>IGameLogic</code>，并由<code>GameEngine</code>托管。</p>
+<pre><code class="language-java">public final class DummyGame implements IGameLogic {
+    private final GameRenderer renderer = new GameRenderer();
+
+    @Override
+    public void init();
+
+    @Override
+    public void input(Window window);
+
+    @Override
+    public void update(float delta);
+
+    @Override
+    public void render(Window window);
+}
+</code></pre>
+<pre><code class="language-java">public final class GameEngine implements Runnable {
+    private final Window window;
+    private final IGameLogic logic;
+    private final Timer timer = new Timer();
+
+    public GameEngine(String title, int width, int height, IGameLogic logic);
+
+    public void init();
+
+    public void input();
+
+    public void update(float delta);
+
+    public void render();
+
+    private void loop();
+
+    @Override
+    public void run();
+}
+</code></pre>
+<p>打开后，你就可以得到一个无聊的黑色窗口了。</p>
+<h3 id="_3">编写着色器</h3>
+<p>为了不使用固定管线而在窗口中显示图像，我们需要至少2个着色器：顶点着色器(vertex shader(vsh))和片元着色器(fragment shader(fsh))。<br />
+当然，你还会遇到几何着色器(geomety shader(gsh))。<br />
+vsh示例很简单：<br />
+(item.vsh)</p>
+<pre><code class="language-glsl">#version 110
+
+in vec2 vert;
+
+void main()
+{
+    gl_Position = vec4(vert, 0, 1);
+}
+</code></pre>
+<p>fsh也类似：<br />
+(item.fsh)</p>
+<pre><code class="language-glsl">#version 110
+
+void main()
+{
+    gl_FragColor = vec4(1, 0, 0, 1);
+}
+</code></pre>
+<ul>
+<li><code>#version 110</code>代表了着色器的版本（此处为GLSL 1.1)</li>
+<li><code>in vec2 vert;</code>代表输入一个二维向量vert， 即顶点位置</li>
+<li><code>void main()</code>是着色器程序的入口。与C不同，这里的<code>main</code>不需要返回值。</li>
+<li><code>gl_Position</code>是一个特殊变量，OpenGL会从这里读取顶点位置</li>
+<li><code>gl_FragColor</code>是一个特殊变量，OpenGL会从这里读取片段颜色<br />
+  以上着色器将在<code>vert.x, vert.y</code>处显示一个红色的图形。</li>
+</ul>
+<p>显然，我们需要读取着色器并让OpenGL识别它<del>废话</del>  </p>
+<p>由于GLUtils的引入，这里一大段被删了。</p>
+<p>首先修改顶点着色器。</p>
+<pre><code class="language-glsl">#version 110
+
+attribute vec2 vert;
+attribute vec3 in_color;
+varying vec3 out_color;
+
+void main()
+{
+    gl_Position = vec4(vert, 0, 1);
+    out_color = in_color;
+}
+</code></pre>
+<p>这样可以设置颜色。</p>
+<p>然后修改片元着色器。</p>
+<pre><code class="language-glsl">#version 110
+
+varying vec3 out_color;
+
+void main()
+{
+    gl_FragColor = vec4(out_color, 1);
+}
+</code></pre>
+<p>现在可以对<code>GameRenderer</code>进行修改了。<br />
+我们在渲染器中初始化了我们的 program，并且使用它。</p>
+<div style="font-size: 2em;">完成了吗？</div>
+
+<p>当然没有。我们还有vbo和vao没写呢。<br />
+由于在本教程中我们使用 OpenGL 2.0， 所以我们使用默认的 vao(0)。</p>
+<!-- 此处需要更多细节。 -->
+<p>我们将在 link the program 后对 vbo 进行初始化。</p>
+<p>首先我们需要一份顶点位置的数组。由于这是个三角形，因此我们需要2×3个顶点。</p>
+<pre><code class="language-java">float[] vertices = {
+    // 中上
+    0, .5f,
+    // 左下
+    -.5f, -.5f,
+    // 右下
+    .5f, -.5f
+};
+</code></pre>
+<p>接着我们将使用<code>glGenBuffers</code>生成 vbo。<br />
+然后我们使用<code>glBindBuffer(GL_ARRAY_BUFFER, vertVbo)</code>将其绑定到<code>GL_ARRAY_BUFFER</code>上。</p>
+<!-- Required: glVertexAttribPointer -->
+
+<p>对<code>colorVbo</code>也执行同样的操作。</p>
+<p>启动后，又会得到一个鲜艳的三角形。<br />
+<img alt="colorful_triangle" src="../triangle.png" /></p>
+<h2 id="_4">矩阵变换</h2>
+<p>在实现移动前，我们先想办法将OpenGL坐标系(-1.0&sim;1)转为屏幕坐标系(0&sim;w,0&sim;h)。</p>
+<p>我们将创建一个变换类。它包含一个投影矩阵。并在使用时传入方块以及屏幕宽高。</p>
+<pre><code class="language-java">public final class Transformation {
+    private final Matrix4f orthoMatrix = new Matrix4f();
+
+    public Matrix4f getOrthoMatrix(Block block, float w, float h) {
+        return orthoMatrix.identity()
+                .ortho2D(0, w, h, 0)
+                .translate(block.x, block.y, 0)
+                .rotateZ(block.rotation)
+                .scaleXY(block.scale, block.scale);
+    }
+}
+</code></pre>
+<p>可以看到，这和我们的传统操作非常类似。</p>
+<pre><code class="language-java">glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+glOrtho(0, w, h, 0, 1, -1);
+glMatrixMode(GL_MODELVIEW);
+glTranslatef(block.x, block.y, 0);
+glRotatef(block.rotation, 0, 0, 1);
+glScalef(block.scale, block.scale, 0);
+</code></pre>
+<p>在完成后，我们需要修改顶点着色器。</p>
+<pre><code class="language-glsl">#version 110
+
+attribute vec2 vert;
+attribute vec3 in_color;
+varying vec3 out_color;
+// 你可以看到我们添加了一个矩阵。
+uniform mat4 orthoMatrix;
+
+void main()
+{
+    // 该矩阵将对vert进行乘法操作。
+    gl_Position = orthoMatrix * vec4(vert, 0, 1);
+    out_color = in_color;
+}
+</code></pre>
+<p>现在可以使用了。我们在<code>GameRenderer</code>中实例化我们的<code>Transformation</code>，并在渲染时获取矩阵。<br />
+我们还需要修改顶点位置以对应屏幕坐标系。</p>
+<pre><code class="language-java">float[] vertices = {
+    // 左上
+    0, 0,
+    // 左下
+    0, 256,
+    // 右下
+    256, 256,
+};
+</code></pre>
+<p>我们将在<code>program#bind</code>之后设置<code>uniform</code>。</p>
+<pre><code class="language-java">try (MemoryStack stack = MemoryStack.stackPush()) {
+    glUniformMatrix4fv(program.getUniform(&quot;orthoMatrix&quot;),
+            false,
+            transformation.getOrthoMatrix(block, window.getWidth(), window.getHeight())
+                    .get(stack.mallocFloat(16)));
+}
+</code></pre>
+<p>一切准备就绪。<del>坐和放宽。</del>我们只需要处理键盘输入即可测试三角形的移动、旋转和缩放。<br />
+我们将看到下图：<br />
+<img alt="translation_rotation_scaling_triangle" src="../triangle-2.png" /></p>
+<hr />
+<p>在示例代码中，我们已经部分实现了<a href="camera.md">摄像机</a>的功能。只是我们按下键盘时会把三角形的坐标改变。</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../texture/" class="btn btn-neutral float-right" title="纹理">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../hello_triangle/" class="btn btn-neutral" title="你好，三角形"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../hello_triangle/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../texture/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

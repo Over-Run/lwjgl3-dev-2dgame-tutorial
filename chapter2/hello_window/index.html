@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>你好，窗口！ - LWJGL3 Develop 2D Game Tutorial</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "\u4f60\u597d\uff0c\u7a97\u53e3\uff01";
+    var mkdocs_page_input_path = "chapter2\\hello_window.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> LWJGL3 Develop 2D Game Tutorial</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">准备工作</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../chapter1/lwjgl/">配置环境</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">入门</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">你好，窗口！</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#opengl">OpenGL的双缓冲</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../hello_triangle/">你好，三角形</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../shader/">着色器</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../texture/">纹理</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">LWJGL3 Develop 2D Game Tutorial</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>入门 &raquo;</li>
+        
+      
+    
+    <li>你好，窗口！</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="_1">你好，窗口！</h1>
+<p>我们已经配置好了环境，现在来创建一个窗口。<br />
+只需根据<a href="https://www.lwjgl.org/guide">LWJGL官方给出的示例即可</a>.<br />
+在启动后，您将会看到一个红色窗口。</p>
+<p>在本节中，我们使用了<a href="https://www.glfw.org">GLFW</a>作为GUI库。</p>
+<hr />
+<p>我相信你无论如何都会对示例感到费解:</p>
+<p>What's this?</p>
+<p>而且这个示例也太过冗长了</p>
+<p>让我们改改</p>
+<pre><code class="language-java">public class HelloWorld {
+
+    // The window handle
+    private long window;
+
+    public void run() {
+        System.out.println(&quot;Hello LWJGL &quot; + Version.getVersion() + &quot;!&quot;);
+
+        init();
+        loop();
+
+        // Free the window callbacks and destroy the window
+        glfwFreeCallbacks(window);
+        glfwDestroyWindow(window);
+
+        // Terminate GLFW and free the error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    }
+
+    private void init() {
+        // Setup an error callback. The default implementation
+        // will print the error message in System.err.
+        GLFWErrorCallback.createPrint(System.err).set();
+
+        // Initialize GLFW. Most GLFW functions will not work before doing this.
+        if ( !glfwInit() )
+            throw new IllegalStateException(&quot;Unable to initialize GLFW&quot;);
+
+        // Configure GLFW
+        glfwDefaultWindowHints(); // optional, the current window hints are already the default
+
+        // Create the window
+        window = glfwCreateWindow(300, 300, &quot;Hello World!&quot;, NULL, NULL);
+        if ( window == NULL )
+            throw new RuntimeException(&quot;Failed to create the GLFW window&quot;);
+
+        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -&gt; {
+            if ( key == GLFW_KEY_ESCAPE &amp;&amp; action == GLFW_RELEASE )
+                glfwSetWindowShouldClose(window, true);
+        });
+
+        // Make the OpenGL context current
+        glfwMakeContextCurrent(window);
+        // Enable v-sync
+        glfwSwapInterval(1);
+    }
+
+    private void loop() {
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        GL.createCapabilities();
+
+        // Set the clear color
+        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+        // Run the rendering loop until the user has attempted to close
+        // the window or has pressed the ESCAPE key.
+        while ( !glfwWindowShouldClose(window) ) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+            glfwSwapBuffers(window); // swap the color buffers
+
+            // Poll for window events. The key callback above will only be
+            // invoked during this call.
+            glfwPollEvents();
+        }
+    }
+
+    public static void main(String[] args) {
+        new HelloWorld().run();
+    }
+
+}
+</code></pre>
+<hr />
+<p>让我们从头开始讲解吧</p>
+<p><code>private long window;</code></p>
+<p>我TM为什么需要它？</p>
+<p><strong>窗口句柄。</strong><br />
+这是答案。</p>
+<p>你必须得知道，GLFW是一个C库<br />
+C语言。。。<br />
+哦我的上帝！他竟然不支持类！！！<br />
+~~这可真是见了鬼了~~</p>
+<p>聪明的人们想到：
+我用一个指向这个窗口信息地址的变量来指代它<br />
+不就得了？！
+这就是：<strong>指针</strong></p>
+<p>但是,Java并不支持指针<br />
+幸好指针也算是个数字
+人们就用<strong>long</strong>来替代它</p>
+<hr />
+<p>然后是init()函数</p>
+<p><code>GLFWErrorCallback.createPrint(System.err).set();</code></p>
+<blockquote>
+<p>Setup an error callback. The default implementation</p>
+<p>will print the error message in System.err.</p>
+</blockquote>
+<p>翻译：</p>
+<blockquote>
+<p>设置一个错误回调。默认实现会在System.err流中打印一个错误消息</p>
+</blockquote>
+<p>有点像<strong>异常</strong></p>
+<pre><code class="language-java">if ( !glfwInit() )
+    throw new IllegalStateException(&quot;Unable to initialize GLFW&quot;);
+</code></pre>
+<p><code>glfwInit()</code> 会初始化glfw,返回是否成功初始化</p>
+<p><code>glfwDefaultWindowHints();</code> 使用默认的配置<br />
+同时，也要提及<code>glfwWindowHint();</code> 它用于设置配置</p>
+<p><code>glfwSetKeyCallback();</code></p>
+<blockquote>
+<p>Setup a key callback. It will be called every time a key is pressed, repeated or released.</p>
+</blockquote>
+<p>翻译：</p>
+<blockquote>
+<p>设置一个按键回调, 每次按下、重复或释放某个键时都会调用它。</p>
+</blockquote>
+<p>而<code>glfwSetWindowShouldClose(window, true);</code>则会让窗口关闭</p>
+<p><code>glfwMakeContextCurrent(window);</code>设置OpenGL上下文</p>
+<p><code>glfwSwapInterval(1);</code>开启垂直同步</p>
+<hr />
+<p>然后是<code>loop()</code>函数</p>
+<p><code>GL.createCapabilities();</code>创建OpenGL上下文</p>
+<p>Stop...</p>
+<blockquote>
+<p><code>glfwMakeContextCurrent(window);</code>设置OpenGL上下文</p>
+</blockquote>
+<p>WTF?</p>
+<p>别急。。。</p>
+<blockquote>
+<p>This line is critical for LWJGL's interoperation with GLFW's</p>
+<p>OpenGL context, or any context that is managed externally.</p>
+<p>LWJGL detects the context that is current in the current thread,</p>
+<p>creates the GLCapabilities instance and makes the OpenGL</p>
+<p>bindings available for use.</p>
+</blockquote>
+<p>翻译：</p>
+<blockquote>
+<p>这一行对于LWJGL与GLFW的OpenGL上下文或任何外部管理的上下文的操作是至关重要的.</p>
+<p>LWJGL检测当前线程中的当前上下文，创建GLCapabilities实例并使OpenGL绑定可用</p>
+</blockquote>
+<p>言简易赅</p>
+<p><strong>LWJGL特性</strong></p>
+<p><code>glClearColor(1.0f, 0.0f, 0.0f, 0.0f);</code></p>
+<p>设置背景色， 以RGBA模式
+OpenGL的RGBA与普通的转换关系如下</p>
+<pre><code class="language-java">public OpenGLRGBA toOpenGL(RGBA color) {
+    OpenGLRGBA rgba;
+    rgba.r = (float) color.r / 256.0f;
+    rgba.g = (float) color.g / 256.0f;
+    rgba.b = (float) color.b / 256.0f;
+    rgba.a = (float) color.a / 256.0f;
+}
+</code></pre>
+<p><code>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);</code>清除颜色缓冲和深度缓冲</p>
+<p><code>glfwSwapBuffers(window);</code>交换缓冲</p>
+<h2 id="opengl">OpenGL的双缓冲</h2>
+<p>为了保障体验，OpenGL用两个缓冲轮流工作</p>
+<p>一个在台前唱戏</p>
+<p>一个在幕后化妆</p>
+<p>当<code>glfwSwapBuffers()</code>被调用时</p>
+<p>两个缓冲就会交换位置</p>
+<p>你肯定不希望看到一个演员边化妆边唱戏吧</p>
+<p><code>glfwPollEvents();</code></p>
+<p>让GLFW按情况触发事件</p>
+<pre><code class="language-java">    // 清空回调
+    glfwFreeCallbacks(window);
+    // 关闭（删除）窗口
+    glfwDestroyWindow(window);
+
+    // 释放内存
+    glfwTerminate();
+    // 释放错误回调
+    glfwSetErrorCallback(null).free();
+</code></pre>
+<p>Nice~</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../hello_triangle/" class="btn btn-neutral float-right" title="你好，三角形">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../../chapter1/lwjgl/" class="btn btn-neutral" title="配置环境"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../../chapter1/lwjgl/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../hello_triangle/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
